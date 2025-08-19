@@ -11,6 +11,8 @@ ns
 .roo/mcp.json
 .env
 logs
+.VSCodeCounter
+repomix-output.xml
 
 # Coverage files
 coverage_profile/

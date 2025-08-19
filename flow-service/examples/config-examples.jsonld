@@ -1,0 +1,274 @@
+{
+  "@context": {
+    "@vocab": "https://semantic-flow.github.io/ontology/",
+    "conf": "https://semantic-flow.github.io/ontology/conf/",
+    "fsvc": "https://semantic-flow.github.io/ontology/flow-service/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "meta": "https://semantic-flow.github.io/ontology/meta-flow/"
+  },
+  "@graph": [
+    {
+      "@id": "_:example1",
+      "@type": "Comment",
+      "description": "Example 1: Platform Service Configuration with defaults for everything"
+    },
+    {
+      "@id": "ex:platformConfig",
+      "@type": "fsvc:PlatformServiceConfig",
+      "fsvc:port": 3000,
+      "fsvc:host": "localhost",
+      "fsvc:scheme": "http",
+      "fsvc:meshPaths": [
+        "/home/user/meshes/main",
+        "/home/user/meshes/test"
+      ],
+      "conf:hasInheritableNodeConfig": {
+        "@id": "ex:platformInheritableConfig",
+        "@type": "conf:InheritableNodeConfig",
+        "conf:versioningEnabled": true,
+        "conf:distributionFormats": [
+          "application/trig",
+          "application/ld+json"
+        ],
+        "conf:generateUnifiedDataset": false,
+        "conf:generateAggregatedDataset": false,
+        "dcterms:license": "https://creativecommons.org/licenses/by/4.0/",
+        "dcterms:rightsHolder": {
+          "@id": "https://example.org/organization"
+        },
+        "prov:wasAttributedTo": {
+          "@id": "https://orcid.org/0000-0000-0000-0000"
+        }
+      }
+    },
+    {
+      "@id": "_:example2",
+      "@type": "Comment",
+      "description": "Example 2: Service Configuration that overrides some platform defaults"
+    },
+    {
+      "@id": "ex:serviceConfig",
+      "@type": "fsvc:ServiceConfig",
+      "fsvc:port": 8080,
+      "fsvc:host": "0.0.0.0",
+      "fsvc:scheme": "https",
+      "conf:hasInheritableNodeConfig": {
+        "@id": "ex:serviceInheritableConfig",
+        "@type": "conf:InheritableNodeConfig",
+        "conf:versioningEnabled": false,
+        "conf:distributionFormats": [
+          "application/trig",
+          "text/turtle",
+          "application/rdf+xml"
+        ],
+        "comment": "Note: Other properties like license and attribution are inherited from platform"
+      }
+    },
+    {
+      "@id": "_:example3",
+      "@type": "Comment",
+      "description": "Example 3: Node with both Operational and Inheritable configurations"
+    },
+    {
+      "@id": "ex:nodeOperationalConfig",
+      "@type": "conf:OperationalNodeConfig",
+      "conf:versioningEnabled": false,
+      "conf:distributionFormats": ["application/trig"],
+      "conf:generateUnifiedDataset": true,
+      "conf:nodeConfigInheritanceEnabled": true,
+      "comment": "This node doesn't version itself but generates unified datasets"
+    },
+    {
+      "@id": "ex:nodeInheritableConfig",
+      "@type": "conf:InheritableNodeConfig",
+      "conf:versioningEnabled": true,
+      "conf:distributionFormats": [
+        "application/trig",
+        "application/ld+json",
+        "text/turtle"
+      ],
+      "conf:generateUnifiedDataset": false,
+      "conf:generateAggregatedDataset": true,
+      "comment": "Children of this node will version and generate aggregated datasets"
+    },
+    {
+      "@id": "_:example4",
+      "@type": "Comment",
+      "description": "Example 4: Node with partial InheritableNodeConfig (relies on inheritance)"
+    },
+    {
+      "@id": "ex:childInheritableConfig",
+      "@type": "conf:InheritableNodeConfig",
+      "conf:versioningEnabled": false,
+      "comment": "Only overrides versioning; other properties inherited from parent InheritableNodeConfig"
+    },
+    {
+      "@id": "_:example5",
+      "@type": "Comment",
+      "description": "Example 5: Using delegation chains in configuration"
+    },
+    {
+      "@id": "ex:configWithDelegation",
+      "@type": "conf:InheritableNodeConfig",
+      "conf:versioningEnabled": true,
+      "meta:delegationChain": {
+        "@id": "ex:delegationChain1",
+        "@type": "meta:DelegationChain",
+        "meta:hasStep": [
+          {
+            "@id": "ex:step1",
+            "@type": "meta:DelegationStep",
+            "meta:stepOrder": 1,
+            "prov:agent": {
+              "@id": "https://orcid.org/0000-0001-0000-0000"
+            }
+          },
+          {
+            "@id": "ex:step2",
+            "@type": "meta:DelegationStep",
+            "meta:stepOrder": 2,
+            "prov:agent": {
+              "@id": "https://orcid.org/0000-0002-0000-0000"
+            },
+            "prov:actedOnBehalfOf": {
+              "@id": "https://orcid.org/0000-0001-0000-0000"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@id": "_:example6",
+      "@type": "Comment",
+      "description": "Example 6: Template mapping configuration"
+    },
+    {
+      "@id": "ex:configWithTemplates",
+      "@type": "conf:OperationalNodeConfig",
+      "conf:versioningEnabled": true,
+      "conf:hasTemplateMappings": {
+        "@id": "ex:templateMappings1",
+        "@type": "conf:TemplateMappings",
+        "conf:hasTemplateMapping": {
+          "@id": "ex:templateMapping1",
+          "@type": "conf:TemplateMapping",
+          "conf:hasResourcePageTemplate": "templates/default-resource.html"
+        }
+      },
+      "conf:stylesheetPath": "styles/main.css"
+    },
+    {
+      "@id": "_:example7",
+      "@type": "Comment",
+      "description": "Example 7: Configuration Firewall - Blocking ALL inheritance"
+    },
+    {
+      "@id": "ex:firewallNode",
+      "@type": "node:Handle",
+      "conf:inheritableConfigPropagationEnabled": false,
+      "rdfs:comment": "This node blocks ALL inheritance from flowing to children",
+      "conf:hasInheritableNodeConfig": {
+        "@id": "ex:unusedInheritableConfig",
+        "@type": "conf:InheritableNodeConfig",
+        "conf:versioningEnabled": true,
+        "rdfs:comment": "This config exists but won't propagate due to firewall"
+      }
+    },
+    {
+      "@id": "_:example8",
+      "@type": "Comment",
+      "description": "Example 8: Child node under a firewall - gets only platform defaults"
+    },
+    {
+      "@id": "ex:childOfFirewall",
+      "@type": "node:Handle",
+      "rdfs:comment": "Parent has inheritableConfigPropagationEnabled: false",
+      "conf:hasOperationalNodeConfig": {
+        "@type": "conf:OperationalNodeConfig",
+        "conf:nodeConfigInheritanceEnabled": true,
+        "rdfs:comment": "Even though inheritance is enabled, parent blocks it - only platform defaults apply"
+      }
+    },
+    {
+      "@id": "_:example9",
+      "@type": "Comment",
+      "description": "Example 9: Complete inheritance chain example"
+    },
+    {
+      "@id": "ex:rootNode",
+      "@type": "node:Handle",
+      "rdfs:label": "Root Node",
+      "conf:hasOperationalNodeConfig": {
+        "@type": "conf:OperationalNodeConfig",
+        "conf:versioningEnabled": false,
+        "conf:distributionFormats": ["application/trig"]
+      },
+      "conf:hasInheritableNodeConfig": {
+        "@type": "conf:InheritableNodeConfig",
+        "conf:versioningEnabled": true,
+        "conf:distributionFormats": ["application/trig", "application/ld+json"],
+        "conf:generateUnifiedDataset": true,
+        "dcterms:license": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    },
+    {
+      "@id": "ex:middleNode",
+      "@type": "node:Handle",
+      "rdfs:label": "Middle Node (inherits from root)",
+      "conf:containedBy": { "@id": "ex:rootNode" },
+      "conf:hasInheritableNodeConfig": {
+        "@type": "conf:InheritableNodeConfig",
+        "conf:generateUnifiedDataset": false,
+        "rdfs:comment": "Overrides only generateUnifiedDataset, inherits rest from parent"
+      }
+    },
+    {
+      "@id": "ex:leafNode",
+      "@type": "node:Handle",
+      "rdfs:label": "Leaf Node (inherits from middle)",
+      "conf:containedBy": { "@id": "ex:middleNode" },
+      "rdfs:comment": "Gets config from middleNode's InheritableNodeConfig (which partially inherits from root)"
+    },
+    {
+      "@id": "_:example10",
+      "@type": "Comment",
+      "description": "Example 10: Multi-tenant configuration with firewall"
+    },
+    {
+      "@id": "ex:tenantBoundary",
+      "@type": "node:Handle",
+      "rdfs:label": "Tenant Boundary Node",
+      "conf:inheritableConfigPropagationEnabled": false,
+      "conf:hasOperationalNodeConfig": {
+        "@type": "conf:OperationalNodeConfig",
+        "conf:versioningEnabled": true,
+        "rdfs:comment": "This node uses platform/service defaults"
+      },
+      "conf:hasInheritableNodeConfig": {
+        "@type": "conf:InheritableNodeConfig",
+        "conf:versioningEnabled": false,
+        "conf:distributionFormats": ["application/trig"],
+        "dcterms:rightsHolder": { "@id": "https://tenant.example.org" },
+        "rdfs:comment": "Tenant-specific config that won't propagate due to firewall"
+      }
+    },
+    {
+      "@id": "_:example11",
+      "@type": "Comment",
+      "description": "Example 11: Node that opts out of inheritance (child perspective)"
+    },
+    {
+      "@id": "ex:independentNode",
+      "@type": "node:Handle",
+      "rdfs:label": "Independent Node",
+      "conf:hasOperationalNodeConfig": {
+        "@type": "conf:OperationalNodeConfig",
+        "conf:nodeConfigInheritanceEnabled": false,
+        "conf:versioningEnabled": true,
+        "conf:distributionFormats": ["text/turtle"],
+        "rdfs:comment": "This node ignores all inheritance and uses only its own config"
+      }
+    }
+  ]
+}
